@@ -28,7 +28,7 @@ The UI including tables and graph views for listing nodes and relationships as w
 1. Clone this repository to your local machine.
 2. Open the file `.env.sample` with a text editor and replace the placeholder `{YOUR_FRONTEND_LICENSE_KEY}` with your personal GraphQL Frontend **License Key**.
 3. Save the file as `.env`.
-4. Run the following command in the repository root directory to create a container for the demo backend service from the soruces at *./demo_backend*:
+4. Run the following command in the repository root directory to create a container for the demo backend service from the sources at *./demo_backend*:
 
     ```bash
     docker compose build
