@@ -43,6 +43,7 @@ The UI including tables and graph views for listing nodes and relationships as w
     ```
    
 2. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to access the GraphQL Frontend.
+3. Sign In using **any** credentials. *(The demo backend has no authentication implemented)*
 
 ## Stop
 
