@@ -1,0 +1,66 @@
+﻿scalar FileReference
+
+type Person
+{
+    id: ID! @id
+    name: String!
+    address: String
+    gender: Gender
+    dateOfBirth: Date
+    companies: [Company!]! @relationship(type: "WORKS_FOR", direction: OUT)
+    avatarImage: FileReference
+    avatarImageFileName: String
+}
+
+enum Gender
+{
+    Female
+    Male
+    Other
+}
+
+
+type Company
+{
+    id: ID! @id
+    name: String!
+    industries: [Industry!]!
+    description: String
+    website: String
+    logo: FileReference
+    employees: [Person!]! @relationship(type: "WORKS_FOR", direction: IN)
+    products: [Product!]! @relationship(type: "OFFERED_BY", direction: IN)
+}
+
+enum Industry
+{
+    Agriculture
+    Foods
+    Construction
+    Education
+    Research
+    Transportation
+    Finance
+    Insurance
+    RealEstate
+    Services
+    IT
+    Other
+}
+
+type Product
+{
+    id: ID! @id
+    name: String!
+    description: String
+    price: Float
+    quantity: Int
+    company: Company @relationship(type: "OFFERED_BY", direction: OUT)
+}
+
+enum ProductType {
+    Product
+    Service
+    System
+    Other
+}

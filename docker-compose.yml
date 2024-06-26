@@ -1,0 +1,85 @@
+﻿### GraphQL Frontend Docker Compose Configuration ###
+### --------------------------------------------- ###
+### Copyright (c) 2024. FoP Consult GmbH          ###
+### All rights reserved.                          ###
+
+services:
+  ### GraphQL Frontend Instance ###
+  frontend:
+    image: ris088/gql-frontend
+    container_name: gqlf
+    volumes:
+      - ./frontend:/output  # On container start, the frontend web app will be configured and copied to ./frontend
+    environment:
+      - VITE_DEFAULT_ENDPOINT_URL_PREFIX=http://localhost:3001/
+      - VITE_DEFAULT_API_PATH=graphql/
+      - VITE_DEFAULT_TOKEN_PATH=token/
+      - VITE_DEFAULT_SCHEMA_PATH=schema.graphql
+      - VITE_LICENSE_KEY=${GQLF_LICENSE_KEY}
+
+
+  ### --- Additional Services --- ###
+
+  ### Demo Apollo GraphQL Backend ###
+  backend:
+    container_name: gqlf-backend
+    build:
+        context: demo_backend
+    ports:
+      - "3001:3001"
+      - "9229:9229" # Optional Node.js Debugger Port, remove if not needed
+    volumes:
+      - ./uploads:/uploads
+      - ./schema:/schema
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    # Note: Please refer to the default configuration of the backend at: ./demo_backend/.env
+    #       You could overwrite those variables here, if needed.
+
+
+  ### nginx Instance ###
+  ### used for serving the GraphQL Frontend Web App from ./frontend ###
+  nginx:
+    image: nginx:stable-bookworm
+    container_name: gqlf-nginx
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      frontend:
+        condition: service_completed_successfully
+      backend:
+        condition: service_started
+
+
+  ### Neo4j Database Instance ###
+  neo4j:
+    image: neo4j:5.7.0-community
+    hostname: gqlf-neo4j
+    container_name: gqlf-neo4j
+    volumes:
+      - ./neo4j/uploads:/uploads/
+      - ./neo4j/backup:/backup/
+      - ./neo4j/plugins:/plugins
+      - ./neo4j/data:/data
+      - ./neo4j/import:/var/lib/neo4j/import
+      - ./neo4j/ssl:/ssl
+      - ./neo4j/conf:/conf
+      - ./neo4j/logs:/logs
+      - ./neo4j/cypher:/cypher
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 3s
+      timeout: 120s
+      retries: 20
+      start_period: 5s
+    environment:
+      NEO4J_dbms_memory_pagecache_size: 1G
+      NEO4J_dbms_memory_heap_initial__size: 5G
+      NEO4J_dbms_memory_heap_max__size: 5G
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: 'yes'
+      NEO4J_AUTH: 'neo4j/graphql-frontend'
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This is a log4j 2 configuration file that provides maximum flexibility.
+
+    All configuration values can be queried with the lookup prefix "config:". You can for example, resolve
+    the path to your neo4j home directory with ${config:dbms.directories.neo4j_home}.
+
+    Please consult https://logging.apache.org/log4j/2.x/manual/configuration.html for instructions and
+    available configuration options.
+-->
+<Configuration status="ERROR" monitorInterval="30" packages="org.neo4j.logging.log4j">
+    <Appenders>
+        <RollingRandomAccessFile name="DebugLog" fileName="${config:server.directories.logs}/debug.log"
+                filePattern="${config:server.directories.logs}/debug.log.%02i">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:org/neo4j/logging/StructuredLayoutWithCategory.json"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="HttpLog" fileName="${config:server.directories.logs}/http.log"
+                filePattern="${config:server.directories.logs}/http.log.%02i">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="5"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:org/neo4j/logging/StructuredLayoutWithMessage.json"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="QueryLog" fileName="${config:server.directories.logs}/query.log"
+                filePattern="${config:server.directories.logs}/query.log.%02i">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:org/neo4j/logging/QueryLogJsonLayout.json"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="SecurityLog" fileName="${config:server.directories.logs}/security.log"
+                filePattern="${config:server.directories.logs}/security.log.%02i">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="7"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:org/neo4j/logging/StructuredJsonLayout.json"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Log levels. One of DEBUG, INFO, WARN, ERROR or OFF -->
+
+        <!-- The debug log is used as the root logger to catch everything -->
+        <Root level="INFO">
+            <AppenderRef ref="DebugLog"/> <!-- Keep this -->
+        </Root>
+
+        <!-- The query log, must be named "QueryLogger" -->
+        <Logger name="QueryLogger" level="INFO" additivity="false">
+            <AppenderRef ref="QueryLog"/>
+        </Logger>
+
+        <!-- The http request log, must be named "HttpLogger" -->
+        <Logger name="HttpLogger" level="INFO" additivity="false">
+            <AppenderRef ref="HttpLog"/>
+        </Logger>
+
+        <!-- The security log, must be named "SecurityLogger" -->
+        <Logger name="SecurityLogger" level="INFO" additivity="false">
+            <AppenderRef ref="SecurityLog"/>
+        </Logger>
+    </Loggers>
+</Configuration>
+

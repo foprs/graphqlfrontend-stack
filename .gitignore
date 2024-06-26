@@ -1,0 +1,6 @@
+﻿.env
+uploads
+frontend
+!/neo4j
+/neo4j/*
+!/neo4j/conf/
