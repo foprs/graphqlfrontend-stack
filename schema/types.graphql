@@ -4,6 +4,7 @@ type Person
 {
     id: ID! @id
     name: String!
+    aliasNames: [String!]
     address: String
     gender: Gender
     dateOfBirth: Date
